@@ -14,5 +14,5 @@ known_devices.yaml
 home-assistant.log*
 id_rsa*
 custom_components/
-home-assistant_v2
+home-assistant_v2*
 home-assistant.log

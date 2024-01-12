@@ -1,4 +1,3 @@
-
 # Loads default set of integrations. Do not remove.
 default_config:
 
@@ -15,19 +14,22 @@ sensor:
     username: !secret foxess-user
     password: !secret foxess-pass
     deviceID: !secret foxess-DID
-    
+
   - platform: seventeentrack
-    username: seventeentrack-user
-    password: seventeentrack-pass
+    username: !secret seventeentrack-user
+    password: !secret seventeentrack-pass
 
 waste_collection_schedule:
-    sources:
+  sources:
     - name: cornwall_gov_uk
       args:
         postcode: !secret postcode
         housenumberorname: !secret housenumber
         uprn: !secret uprn
-        
+
+shell_command:
+  pushupdates_to_github: /bin/bash pushupdates.sh
+
 logger:
   default: warning
   logs:

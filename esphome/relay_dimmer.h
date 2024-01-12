@@ -2,7 +2,7 @@
 using namespace esphome;
 const int ledCount = 6;    // the number of LEDs in the bar graph
 //int ledPins[] = {14, 12, 13, 4, 2, 16};   // an array of pin numbers to which LEDs are attached
-int ledPins[] = {14, 4, 12, 2, 13, 16};   // an array of pin numbers to which LEDs are attached
+int ledPins[] = {14, 15, 12, 10, 13, 16};   // an array of pin numbers to which LEDs are attached
 int offset = 0;
 int lastLedLevel = 0;
 
@@ -13,7 +13,7 @@ class MyCustomFloatOutput : public Component, public FloatOutput {
     for (int thisLed = 0; thisLed < ledCount; thisLed++) {  // loop over the pin array and set them all to output:
       pinMode(ledPins[thisLed], OUTPUT);
     }
-    pinMode(15, OUTPUT);
+    // pinMode(15, OUTPUT);
     //digitalWrite(15, HIGH);
   }
 
@@ -29,14 +29,14 @@ class MyCustomFloatOutput : public Component, public FloatOutput {
     lastLedLevel = ledLevel;
       //ESP_LOGD("main", "LED Level %d", ledLevel);
       if (ledLevel == 0) {
-        digitalWrite(15, LOW);
+        // digitalWrite(15, LOW);
         offset++;
         //ESP_LOGD("main", "offset Level %d", offset);
         if (offset == ledCount) {
           offset = 0;
         }
-      } else {
-        digitalWrite(15, HIGH);
+      // } else {
+      //   digitalWrite(15, HIGH);
       }
     }
 

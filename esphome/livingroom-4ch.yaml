@@ -1,0 +1,115 @@
+# Basic Config
+substitutions:
+  lowercase_name: livingroom-4ch
+  friendly_name: Livingroom Sonoff 4ch
+  static_ip: 10.10.1.67
+
+esphome:
+  name: ${lowercase_name}
+  friendly_name: ${friendly_name}
+#  on_shutdown:
+#    then:
+#      - light.turn_off: dimmer
+
+esp8266:
+  board: esp01_1m
+  framework:
+    version: recommended
+  restore_from_flash: true
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+#  reboot_timeout: 0s
+  encryption:
+    key: !secret api_pass
+
+ota:
+  password: !secret ota_pass
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  #Use this if you are changing the IP address to something different
+  #use_address: 10.10.0.152
+
+  manual_ip:
+    # Set this to the IP of the ESP
+    static_ip: ${static_ip}
+    # Set this to the IP address of the router. Often ends with .1
+    gateway: !secret wifigateway
+    # The subnet of the network. 255.255.255.0 works for most home networks.
+    subnet: !secret wifisubnet
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: ${lowercase_name}
+    password: !secret ap-pass
+
+captive_portal:
+
+web_server:
+  port: 80
+
+# Device Specific Config
+status_led:
+  pin:
+    number: GPIO13
+    inverted: True
+    
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO0
+      mode: INPUT_PULLUP
+      inverted: True
+    name: "Sonoff 4CH Button 1"
+    on_press:
+      - switch.toggle: "relay_1"
+  - platform: gpio
+    pin:
+      number: GPIO9
+      mode: INPUT_PULLUP
+      inverted: True
+    name: "Sonoff 4CH Button 2"
+    on_press:
+      - switch.toggle: "relay_2"
+  - platform: gpio
+    pin:
+      number: GPIO10
+      mode: INPUT_PULLUP
+      inverted: True
+    name: "Sonoff 4CH Button 3"
+    on_press:
+      - switch.toggle: "relay_3"
+  - platform: gpio
+    pin:
+      number: GPIO14
+      mode: INPUT_PULLUP
+      inverted: True
+    name: "Sonoff 4CH Button 4"
+    on_press:
+      - switch.toggle: "relay_4"
+
+  - platform: status
+    name: "Sonoff 4CH Status"
+
+switch:
+  - platform: gpio
+    name: "Relay 1"
+    pin: GPIO12
+    id: "relay_1"
+  - platform: gpio
+    name: "Relay 2"
+    pin: GPIO5
+    id: "relay_2"
+  - platform: gpio
+    name: "Relay 3"
+    pin: GPIO4
+    id: "relay_3"
+  - platform: gpio
+    name: "Relay 4"
+    pin: GPIO15
+    id: "relay_4"

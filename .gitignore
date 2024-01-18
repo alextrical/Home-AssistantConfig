@@ -28,7 +28,7 @@ known_devices.yaml
 # .ssh
 # .storage
 # .cloud
-# .google.token
+.google.token
 # home-assistant.log*
 # id_rsa*
 # custom_components/

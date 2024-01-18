@@ -1,18 +1,36 @@
-secrets.yaml
-*.log
-*.log.txt
-*.xml
-*.db
-*.sqlite
-.storage/
-harmony_harmony_hub.conf
-known_devices.yaml
-.ssh
+# Example .gitignore file for your config dir.
+# An * ensures that everything will be ignored.
+*
+# You can whitelist files/folders with !, these will not be ignored.
+!*.yaml
+!.gitignore
+!*.md
+
+# Ignore folders.
 .storage
 .cloud
 .google.token
-home-assistant.log*
-id_rsa*
-custom_components/
-home-assistant_v2*
-home-assistant.log
+
+# Ensure these YAML files are ignored, otherwise your secret data/credentials will leak.
+ip_bans.yaml
+secrets.yaml
+known_devices.yaml
+
+# secrets.yaml
+# *.log
+# *.log.txt
+# *.xml
+# *.db
+# *.sqlite
+# .storage/
+# harmony_harmony_hub.conf
+# known_devices.yaml
+# .ssh
+# .storage
+# .cloud
+# .google.token
+# home-assistant.log*
+# id_rsa*
+# custom_components/
+# home-assistant_v2*
+# home-assistant.log

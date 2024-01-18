@@ -10,11 +10,6 @@ script: !include scripts.yaml
 scene: !include scenes.yaml
 
 sensor:
-  - platform: foxess
-    username: !secret foxess-user
-    password: !secret foxess-pass
-    deviceID: !secret foxess-DID
-
   - platform: seventeentrack
     username: !secret seventeentrack-user
     password: !secret seventeentrack-pass
@@ -34,3 +29,32 @@ logger:
   default: warning
   logs:
     custom_components.foxess: debug
+
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 172.16.0.0/12
+
+zha:
+  zigpy_config:
+    ota:
+      ikea_provider: true                        # Auto update Trådfri devices
+      ledvance_provider: true                    # Auto update LEDVANCE/OSRAM devices
+      salus_provider: true                       # Auto update SALUS/Computime devices
+      inovelli_provider: true                    # Auto update INOVELLI devices
+      thirdreality_provider: true                # Auto update 3REALITY devices
+      #otau_directory: /path/to/your/ota/folder  # Utilize .ota files to update everything else
+
+switch:
+  - platform: command_line
+    switches:
+      github_configuration_commit:
+        unique_id: github_configuration_commit_switch
+        command_on: "git commit -am 'Daily commit `date`' && git push"
+      # Extra switches for testing purposes
+      github_commit_test:
+        unique_id: github_commit_test
+        command_on: "git commit -am 'Daily commit `date`' &> commandline_logs/commit.log"
+      github_push_test:
+        unique_id: github_push_test
+        command_on: "git push &> commandline_logs/push.log"

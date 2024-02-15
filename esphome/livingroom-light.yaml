@@ -87,9 +87,10 @@ binary_sensor:
       mode: input
     id: spst_switch
     # internal: true
-    #filters:
+    filters:
+      #- delayed_on: 200ms
       #- delayed_off: 100ms
-      #- delayed_on_off: 100ms
+      - delayed_on_off: 150ms
     on_press:
       then:
         - logger.log: "GPIO4 1"

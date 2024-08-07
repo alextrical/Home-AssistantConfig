@@ -1,0 +1,31 @@
+esphome:
+  name: esp32-s3-lyratd-msc
+  friendly_name: ESP32-S3-LyraTD-MSC
+
+esp32:
+  board: esp32-s3-devkitc-1
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "NRnWnxNbQ/9KyTTpglAuFEeAa4omQS6D2IZJhYDBuQs="
+
+ota:
+  password: "df6dea8beee245ca371dc4e40df874ea"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Esp32-S3-Lyratd-Msc"
+    password: "AtTOebU71stb"
+
+captive_portal:
+    

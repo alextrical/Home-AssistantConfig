@@ -1,0 +1,37 @@
+esphome:
+  name: esp32-s3-test
+  friendly_name: ESP32-S3 Test
+  platformio_options:
+    board_build.flash_mode: dio
+    board_build.extra_flags:
+      - "-DARDUINO_USB_CDC_ON_BOOT=0"  # Override, defaults to '-DARDUINO_USB_CDC_ON_BOOT=1'
+      - "-DARDUINO_USB_MODE=0"
+
+esp32:
+  board: esp32-s3-devkitc-1
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "tqhhbJYFBVrwEOKSZUNCgHSStFnOxx3uyJeQ5ZzSFCQ="
+
+ota:
+  - platform: esphome
+    password: "b51bb4e6138beb65f05088a3cd9ead10"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Esp32-S3-Test Fallback Hotspot"
+    password: "ArA0z4h7PlCH"
+
+captive_portal:
+    

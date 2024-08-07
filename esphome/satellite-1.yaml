@@ -1,0 +1,84 @@
+substitutions:
+  node_name: fph-sat1
+  friendly_name: 'FPH Sat1'
+  area: 'Media Room'
+
+esphome:
+  name: ${node_name}
+  min_version: 2024.2.0
+  platformio_options:
+    board_build.flash_mode: dio
+    board_upload.maximum_size: 16777216
+
+esp32:
+  board: esp32-s3-devkitc-1
+  variant: ESP32S3
+  flash_size: 16MB
+  framework:
+    type: esp-idf
+    version: recommended
+    sdkconfig_options:
+      # need to set a s3 compatible board for the adf-sdk to compile
+      # board specific code is not used though
+      CONFIG_ESP32_S3_BOX_BOARD: "y"
+      CONFIG_ESP32_WIFI_STATIC_RX_BUFFER_NUM: "16"
+      CONFIG_ESP32_WIFI_DYNAMIC_RX_BUFFER_NUM: "512"
+      CONFIG_TCPIP_RECVMBOX_SIZE: "512"
+
+      CONFIG_TCP_SND_BUF_DEFAULT: "65535"
+      CONFIG_TCP_WND_DEFAULT: "512000"
+      CONFIG_TCP_RECVMBOX_SIZE: "512"
+
+      #CONFIG_LOG_DEFAULT_LEVEL_DEBUG: "y"
+      #CONFIG_LOG_DEFAULT_LEVEL: "4"
+
+logger:
+  hardware_uart : UART0
+  level: VERBOSE
+  logs:
+    micro_wake_word: WARN
+
+
+psram:
+  mode: octal
+  speed: 120MHz
+
+
+ota:
+  - platform: esphome
+
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "FPH Sat1 Fallback Hotspot"
+    password: "NDarYztmiMGL"
+
+
+captive_portal:
+
+i2c:
+  #For Illuminance BH1750 sensor
+  - id: bus_a 
+    sda: GPIO8
+    scl: GPIO3
+    scan: true
+
+sensor:
+  - platform: dht
+    pin: GPIO5
+    temperature:
+      name: "Room Temperature"
+    humidity:
+      name: "Room Humidity"
+    update_interval: 10s
+    
+  - platform: bh1750
+    i2c_id: bus_a
+    name: "Illuminance"
+    address: 0x23
+    update_interval: 10s

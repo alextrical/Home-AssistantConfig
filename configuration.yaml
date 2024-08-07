@@ -35,14 +35,16 @@ http:
   trusted_proxies:
     - 172.16.0.0/12
 
+wake_on_lan:
+
 zha:
   zigpy_config:
     ota:
-      ikea_provider: true                        # Auto update Trådfri devices
-      ledvance_provider: true                    # Auto update LEDVANCE/OSRAM devices
-      salus_provider: true                       # Auto update SALUS/Computime devices
-      inovelli_provider: true                    # Auto update INOVELLI devices
-      thirdreality_provider: true                # Auto update 3REALITY devices
+      ikea_provider: true # Auto update Trådfri devices
+      ledvance_provider: true # Auto update LEDVANCE/OSRAM devices
+      salus_provider: true # Auto update SALUS/Computime devices
+      inovelli_provider: true # Auto update INOVELLI devices
+      thirdreality_provider: true # Auto update 3REALITY devices
       #otau_directory: /path/to/your/ota/folder  # Utilize .ota files to update everything else
 
 switch:
@@ -58,3 +60,10 @@ switch:
       github_push_test:
         unique_id: github_push_test
         command_on: "git push &> commandline_logs/push.log"
+  - platform: wake_on_lan
+    name: "Workstation"
+    mac: 40:A8:F0:63:F7:E6
+    host: “10.10.0.153”
+
+assist_pipeline:
+  debug_recording_dir: /config/debug

@@ -1,0 +1,225 @@
+# Basic Config
+substitutions:
+  lowercase_name: esp32-lyratd-msc
+  friendly_name: ESP32-LyraTD-MSC
+  static_ip: 10.10.1.81
+  
+esphome:
+  name: ${lowercase_name}
+  min_version: 2023.11.0b5
+  # on_boot:
+  #   priority: -100
+  #   then:
+  #   - light.turn_on:
+  #       id: leds
+  #       brightness: 60%
+  #       effect: "Slow Pulse"
+
+debug:
+  update_interval: 5s
+
+esp32:
+  board: esp-wrover-kit
+  framework:
+    type: esp-idf
+
+# Enable logging
+logger:
+  level: DEBUG
+  logs:
+    adc: INFO
+    sensor: INFO
+
+i2c:
+  sda: GPIO18
+  scl: GPIO23
+
+i2s_audio:
+  i2s_lrclk_pin: GPIO25
+  i2s_bclk_pin: GPIO5
+
+speaker:
+  - platform: i2s_audio
+    id: echo_speaker
+    dac_type: external
+    i2s_dout_pin: GPIO26
+    mode: stereo
+
+microphone:
+  - platform: i2s_audio
+    id: echo_microphone
+    adc_type: external
+    i2s_din_pin: GPIO35
+    pdm: false
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret api_pass
+
+ota:
+  password: !secret ota_pass
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  manual_ip:
+    # Set this to the IP of the ESP
+    static_ip: ${static_ip}
+    # Set this to the IP address of the router. Often ends with .1
+    gateway: !secret wifigateway
+    # The subnet of the network. 255.255.255.0 works for most home networks.
+    subnet: !secret wifisubnet
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: ${lowercase_name}
+    password: !secret ap-pass
+
+preferences:
+  flash_write_interval: 10min
+
+external_components:
+  - source: github://pr#5230
+    components:
+      - esp_adf
+    refresh: 0s
+
+voice_assistant:
+  id: va
+  speaker: echo_speaker
+  microphone: echo_microphone
+  noise_suppression_level: 2
+  auto_gain: 31dBFS
+  volume_multiplier: 2.0
+  vad_threshold: 3
+  on_end:
+    - delay: 100ms
+    - wait_until:
+        not:
+          speaker.is_playing:
+  on_client_connected:
+    - if:
+        condition:
+          switch.is_on: use_wake_word
+        then:
+          - voice_assistant.start_continuous:
+  on_client_disconnected:
+    - if:
+        condition:
+          switch.is_on: use_wake_word
+        then:
+          - voice_assistant.stop:
+
+switch:
+  - platform: gpio
+    pin: 
+      number: GPIO21
+      inverted: true
+    name: None
+    id: power_switch
+    restore_mode: ALWAYS_ON
+  - platform: gpio
+    pin: GPIO22
+    id: amp_switch
+    name: Speakers
+    restore_mode: ALWAYS_ON
+  - platform: template
+    name: Use wake word
+    id: use_wake_word
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    entity_category: config
+    on_turn_on:
+      - lambda: id(va).set_use_wake_word(true);
+      - if:
+          condition:
+            not:
+              - voice_assistant.is_running
+          then:
+            - voice_assistant.start_continuous
+    on_turn_off:
+      - voice_assistant.stop
+      - lambda: id(va).set_use_wake_word(false);
+
+button:
+  - platform: template
+    id: set_button
+    on_press:
+      - logger.log: Set button pressed
+  - platform: template
+    id: play_button
+    on_press:
+      - logger.log: Play button pressed
+  - platform: template
+    id: rec_button
+    name: Record
+    on_press:
+      - if:
+          condition:
+            switch.is_off: use_wake_word
+          then:
+            - if:
+                condition: voice_assistant.is_running
+                then:
+                  - voice_assistant.stop:
+                else:
+                  - voice_assistant.start:
+          else:
+            - voice_assistant.stop
+            - delay: 1s
+            - voice_assistant.start_continuous:
+      - logger.log: Record button pressed
+  - platform: template
+    id: mode_button
+    on_press:
+      - logger.log: Mode button pressed
+  - platform: template
+    id: vol_down_button
+    on_press:
+      #- media_player.volume_down:
+      - logger.log: Volume Down button pressed
+  - platform: template
+    id: vol_up_button
+    on_press:
+      #- media_player.volume_up:
+      - logger.log: Volume Up button pressed
+
+sensor:
+  - platform: adc
+    pin: GPIO39
+    id: button_array
+    accuracy_decimals: 1
+    update_interval: 200ms
+    attenuation: auto
+    on_value_range:
+      - above: 0.2
+        below: 0.4
+        then:
+          - button.press: set_button
+      - above: 0.7
+        below: 0.9
+        then:
+          - button.press: play_button
+      - above: 1.2
+        below: 1.4
+        then:
+          - button.press: rec_button
+      - above: 1.7
+        below: 1.9
+        then:
+          - button.press: mode_button
+      - above: 2.2
+        below: 2.4
+        then:
+          - button.press: vol_down_button
+      - above: 2.7
+        below: 2.9
+        then:
+          - button.press: vol_up_button
+
+esp_adf:
+
+captive_portal:
+    
